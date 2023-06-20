@@ -6,8 +6,8 @@ class ApiFeatures {
   }
 
   filter() {
-    const queryStringObj = { ...this.queryString };
-    const excludesFields = ["page", "limit", "sort", "fields", "q"];
+    const queryStringObj = {...this.queryString};
+    const excludesFields = [ "page", "limit", "sort", "fields", "q" ];
     excludesFields.forEach((field) => delete queryStringObj[field]);
     // Apply filtration using [gte, gt, lte, lt]
     let queryStr = JSON.stringify(queryStringObj);
@@ -18,9 +18,9 @@ class ApiFeatures {
     return this;
   }
 
-  paginate({ countDocs }) {
+  paginate({countDocs}) {
     // pagination result
-    let { page = 1, limit = 50 } = this.queryString;
+    let {page = 1, limit = 50} = this.queryString;
     page = +page;
     limit = +limit;
     const pagination = {};
@@ -57,7 +57,7 @@ class ApiFeatures {
   }
 
   sort() {
-    let { sort } = this.queryString;
+    let {sort} = this.queryString;
     if (sort) {
       sort = sort.split(",").join(" ");
       this.mongooseQuery = this.mongooseQuery.sort(sort);
@@ -66,7 +66,7 @@ class ApiFeatures {
   }
 
   limitFields() {
-    let { fields } = this.queryString;
+    let {fields} = this.queryString;
     if (fields) {
       fields = fields.split(",").join(" ");
       this.mongooseQuery = this.mongooseQuery.select(fields);
@@ -75,16 +75,16 @@ class ApiFeatures {
   }
 
   search(modelName) {
-    let { q } = this.queryString;
+    let {q} = this.queryString;
     if (q) {
       let query = {};
       if (modelName === "Product") {
         query.$or = [
-          { title: { $regex: q, $options: "i" } },
-          { description: { $regex: q, $options: "i" } },
+          {title : {$regex : q, $options : "i"}},
+          {description : {$regex : q, $options : "i"}},
         ];
       } else {
-        query = { name: { $regex: q, $options: "i" } };
+        query = {name : {$regex : q, $options : "i"}};
       }
 
       this.mongooseQuery = this.mongooseQuery.find(query);
