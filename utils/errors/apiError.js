@@ -1,4 +1,4 @@
-const {StatusCodes} = require("http-status-codes");
+const { StatusCodes } = require("http-status-codes");
 class ApiError extends Error {
   constructor(message, statusCode) {
     super(message);
@@ -6,29 +6,29 @@ class ApiError extends Error {
   }
 }
 
-const handleDuplicateKeyError = (schema,
-                                 type) => schema.post(type, function(error, doc,
-                                                                     next) {
-  if (error.name === "MongoServerError" && error.code === 11000) {
-    const fieldName = Object.keys(error.keyValue)[0];
-    next(new ApiError(
-        `'${fieldName}' value must be unique. The value '${
-            error.keyValue
-                [fieldName]}' is already in use. Please choose a different value.`,
-        StatusCodes.CONFLICT));
-  } else {
-    next(error);
-  }
-});
+const handleDuplicateKeyError = (schema, type) =>
+  schema.post(type, function (error, doc, next) {
+    if (error.name === "MongoServerError" && error.code === 11000) {
+      const fieldName = Object.keys(error.keyValue)[0];
+      next(
+        new ApiError(
+          `'${fieldName}' value must be unique. The value '${error.keyValue[fieldName]}' is already in use. Please choose a different value.`,
+          StatusCodes.CONFLICT
+        )
+      );
+    } else {
+      next(error);
+    }
+  });
 
 const errorHandler = (err) => ({
-  statusCode : err.statusCode || StatusCodes.BAD_REQUEST,
-  message : err.message || "bad request",
-  stack : err.stack,
+  statusCode: err.statusCode || StatusCodes.BAD_REQUEST,
+  message: err.message || "bad request",
+  stack: err.stack,
 });
 
 const developmentError = (err, res) => {
-  const {statusCode, message, stack} = errorHandler(err);
+  const { statusCode, message, stack } = errorHandler(err);
   res.status(statusCode).json({
     statusCode,
     message,
@@ -37,7 +37,7 @@ const developmentError = (err, res) => {
 };
 
 const productionError = (err, res) => {
-  const {statusCode, message} = errorHandler(err);
+  const { statusCode, message } = errorHandler(err);
   res.status(statusCode).json({
     statusCode,
     message,
