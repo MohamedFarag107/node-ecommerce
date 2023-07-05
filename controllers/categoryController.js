@@ -7,6 +7,8 @@ const {
   getAll,
 } = require("./factory");
 
+// category controller
+
 // @desc    Create Category
 // @method  POST
 // @access  Private
